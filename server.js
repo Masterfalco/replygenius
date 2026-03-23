@@ -127,8 +127,8 @@ app.post('/api/webhook/new-review', async (req, res) => {
   if (!review_text && !star_rating) return res.status(400).json({ error: 'Missing review data' });
 
   const author = reviewer_name || 'Customer';
-  const rating = parseInt(star_rating) || 3;
-  const text = review_text || '';
+const ratingMap = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 };
+const rating = ratingMap[String(star_rating).toUpperCase()] || parseInt(star_rating) || 3;  const text = review_text || '';
   const gId = review_id || `manual-${Date.now()}`;
   const date = review_date || new Date().toISOString();
 
