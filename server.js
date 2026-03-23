@@ -46,12 +46,16 @@ const defaultSettings = {
   keywords: 'residential cleaning, house cleaning, deep cleaning, Puerto Rico, eco-friendly, professional cleaners',
   tone: 'professional',
   auto_generate: 'true',
-  webhook_secret: require('crypto').randomBytes(16).toString('hex')
+  webhook_secret: process.env.WEBHOOK_SECRET || require('crypto').randomBytes(16).toString('hex')
 };
 Object.entries(defaultSettings).forEach(([k, v]) => {
   db.prepare("INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)").run(k, v);
 });
 
+// Always sync webhook secret from env var if provided
+if (process.env.WEBHOOK_SECRET) {
+  setSetting('webhook_secret', process.env.WEBHOOK_SECRET);
+}
 const getSetting = (key) => db.prepare("SELECT value FROM settings WHERE key = ?").get(key)?.value;
 const setSetting = (key, val) => db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)").run(key, val);
 
